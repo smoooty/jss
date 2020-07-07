@@ -2,7 +2,7 @@ const crossSpawn = require('cross-spawn');
 const path = require('path');
 const fs = require('fs-extra');
 
-const SOURCE_PATH = path.resolve(__dirname, '../scripts')
+const SOURCE_PATH = path.resolve(__dirname, '../scripts');
 
 fs.removeSync(SOURCE_PATH);
 

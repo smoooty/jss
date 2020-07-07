@@ -18,8 +18,9 @@ const GraphQLLayout = ({ sitecoreContext, rendering }) => {
             box, however.
           </p>
           <p>
-            To view the GraphQL samples, restart the app using <code>jss start:connected</code>&nbsp;
-            or deploy the app to Sitecore to run in integrated mode per the JSS documentation.
+            To view the GraphQL samples, restart the app using <code>jss start:connected</code>
+            &nbsp; or deploy the app to Sitecore to run in integrated mode per the JSS
+            documentation.
           </p>
         </React.Fragment>
       )}
