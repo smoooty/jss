@@ -41,7 +41,7 @@ export class SitecoreContextFactory {
 export const SitecoreContextReactContext = React.createContext<SitecoreContextFactory>({} as SitecoreContextFactory);
 export const ComponentFactoryReactContext = React.createContext<ComponentFactory>({} as ComponentFactory);
 
-export class SitecoreContext extends React.Component<SitecoreContextProps, { contextFactory: SitecoreContextFactory }> {
+export class SitecoreContext extends React.Component<SitecoreContextProps, { contextFactory: SitecoreContextFactory, componentFactory: ComponentFactory }> {
   static propTypes = {
     children: PropTypes.any.isRequired,
     componentFactory: PropTypes.func,
@@ -50,18 +50,17 @@ export class SitecoreContext extends React.Component<SitecoreContextProps, { con
 
   static displayName = 'SitecoreContext';
 
-  componentFactory: ComponentFactory;
+  constructor(props: SitecoreContextProps) {
+    super(props);
 
-  constructor(props: SitecoreContextProps, context: any) {
-    super(props, context);
-
-    this.componentFactory = props.componentFactory;
-
-    const contextFactory = this.props.contextFactory
-      ? this.props.contextFactory
+    const contextFactory = props.contextFactory
+      ? props.contextFactory
       : new SitecoreContextFactory();
+
+    const componentFactory = props.componentFactory;
     
     this.state = {
+      componentFactory: componentFactory,
       contextFactory: { ...contextFactory }
     };
 
@@ -82,7 +81,7 @@ export class SitecoreContext extends React.Component<SitecoreContextProps, { con
 
   render() {
     return (
-    <ComponentFactoryReactContext.Provider value={this.componentFactory}>
+    <ComponentFactoryReactContext.Provider value={this.state.componentFactory}>
       <SitecoreContextReactContext.Provider value={this.state.contextFactory}>
         {this.props.children}
       </SitecoreContextReactContext.Provider>

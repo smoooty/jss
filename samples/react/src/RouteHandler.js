@@ -29,15 +29,6 @@ export default class RouteHandler extends React.Component {
       defaultLanguage: config.defaultLanguage,
     };
 
-    if (ssrInitialState && ssrInitialState.sitecore && ssrInitialState.sitecore.route) {
-      // set the initial sitecore context data if we got SSR initial state
-      SitecoreContextFactory.setSitecoreContext({
-        route: ssrInitialState.sitecore.route,
-        itemId: ssrInitialState.sitecore.route.itemId,
-        ...ssrInitialState.sitecore.context,
-      });
-    }
-
     // route data from react-router - if route was resolved, it's not a 404
     if (props.route !== null) {
       this.state.notFound = false;
@@ -61,6 +52,29 @@ export default class RouteHandler extends React.Component {
       this.state.defaultLanguage = ssrInitialState.sitecore.context.language;
     }
 
+    this.componentIsMounted = false;
+    this.languageIsChanging = false;
+
+    // initialize when we are on the server side
+    if (typeof window === 'undefined') {
+      this.initialize();
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    
+  }
+
+  initialize() {
+    if (ssrInitialState && ssrInitialState.sitecore && ssrInitialState.sitecore.route) {
+      // set the initial sitecore context data if we got SSR initial state
+      SitecoreContextFactory.setSitecoreContext({
+        route: ssrInitialState.sitecore.route,
+        itemId: ssrInitialState.sitecore.route.itemId,
+        ...ssrInitialState.sitecore.context,
+      });
+    }
+
     // once we initialize the route handler, we've "used up" the SSR data,
     // if it existed, so we want to clear it now that it's in react state.
     // future route changes that might destroy/remount this component should ignore any SSR data.
@@ -72,14 +86,14 @@ export default class RouteHandler extends React.Component {
       ssrInitialState = null;
     }
 
-    this.componentIsMounted = false;
-    this.languageIsChanging = false;
-
     // tell i18next to sync its current language with the route language
     this.updateLanguage();
   }
 
   componentDidMount() {
+    // initialize when we are on the client side. Not recommended to call side effects on the client side inside the constructor
+    this.initialize();
+
     // if no existing routeData is present (from SSR), get Layout Service fetching the route data
     if (!this.state.routeData) {
       this.updateRouteData();
